@@ -1,17 +1,16 @@
-import { IoCartSharp } from "react-icons/io5";
+import {BsCartFill} from "react-icons/bs"
 import Badge from "react-bootstrap/Badge";
-import Stack from "react-bootstrap/Stack";
-const CartWidget = () => {
+import { useContext } from "react"
+import { CartContext } from "../../context/CartContext"
+
+const CartWidget = ({counter}) => {
+  const {cartQuantity}= useContext(CartContext)
   return (
-    <>
-      <IoCartSharp />
-      <Stack direction="horizontal" gap={2}>
-        <Badge pill bg="dark">
-          1
-        </Badge>
-      </Stack>
-    </>
-  );
-};
+    <div style={{display:'flex'}}>
+      {cartQuantity() > 0 &&  <Badge bg="danger">{cartQuantity()}</Badge>}
+      <BsCartFill color='green' fontSize={'1.5rem'}/>
+    </div>
+  )
+}
 
 export default CartWidget;

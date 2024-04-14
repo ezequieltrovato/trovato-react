@@ -1,34 +1,42 @@
 import React from 'react'
 import {useState, useEffect} from 'react'
-import {getProducts} from '../../mock/fakeApi'
 import ItemList from '../itemList/ItemList'
 import { useParams } from 'react-router-dom'
+import { collection, getDocs, query, where } from 'firebase/firestore'
+import { db } from '../../services/firebase'
 
 function ItemListContainer({greeting}) {
-    const [productos, setProductos]=useState([])
-    const  [loading, setLoading] = useState(false)
-    const {categoryId} = useParams()
-        useEffect(()=>{
+    const [products, setProducts]= useState([])
+    const  [loading, setLoading]= useState(false)
+    const {categoryId}= useParams()
+
+    useEffect(() =>{
         setLoading(true)
-        getProducts()
+        const productCollection = categoryId ? query(collection(db, "productos"), where("category", "==", categoryId)) : collection(db, "productos")
+        getDocs(productCollection)
         .then((res)=>{
-            if (categoryId){
-            setProductos(res.filtrer((prod)=> prod.category === categoryId))
-            }else {setProductos(res)}})
-        .catch((error)=> console.log(error, 'no se encontro'))
-        .finally(()=> setLoading(false))
+            const data= res.docs.map((doc)=>{
+                return{
+                    id:doc.id,
+                    ...doc.data()
+                }
+                })
+            setProducts(data)
+    })
+    .catch((error)=>console.log(error))
+    .finally(()=>setLoading(false))                                    
     },[categoryId])
 
+    
+
 if (loading){
-    return <h1>Cargando...</h1>
+    return <h2>Plantando...</h2>
 }
+
 return (
     <div>
-        { categoryId 
-        ? <h1 className='fst-italic text-danger-emphasis'>{greeting} <span style=       {{color:'red'}}>{categoryId}</span></h1>:
-        <h1 className='fst-italic text-danger-emphasis'>{greeting}</h1>
-        }
-    <ItemList productos={productos}/>
+        <h1 className='fst-italic text-danger-emphasis'style={{textAlign:'center'}}>{greeting}</h1>
+        <ItemList products={products}/>
     </div>
     )
 }
