@@ -125,10 +125,10 @@ export const getOneProduct = (id) =>{
         let error = false
         setTimeout(()=>{
             if(error){
-                reject('Hubo un problema')
+                reject('No existe esa planta')
             }else{
-                let oneproduct = productos.find((item)=> item.id === id)
-                resolve(oneproduct)
+                let oneProduct = productos.find((prod)=> prod.id === id)
+                resolve(oneProduct)
             }
         },1500)
     })
